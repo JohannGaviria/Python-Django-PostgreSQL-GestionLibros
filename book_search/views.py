@@ -26,7 +26,8 @@ def search_books(request):
     books = Book.objects.filter(
         Q(title__icontains=query) |
         Q(author__full_name__icontains=query) |
-        Q(genre__genre__icontains=query)
+        Q(genre__genre__icontains=query),
+        user=request.user
     ).distinct()
 
     # Si el parametro de busqueda devuelve libros que no existe, devolver un mensaje de error

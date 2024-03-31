@@ -13,7 +13,7 @@ class BookAPICreateTestCase(TestCase):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password123')
     
-    # Prueba para creacion de libros correctamente
+    # Prueba para crear libros correctamente
     def test_successful_create_book(self):
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
@@ -21,6 +21,7 @@ class BookAPICreateTestCase(TestCase):
         url = reverse('create_book')
         data = {
             "title": "Test Title",
+            "user": self.user.id,
             "author": {
                 "full_name": "Test full name",
                 "email": "test@example.com"
@@ -79,7 +80,8 @@ class GetAllBooksAPITestCase(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.data['message'], 'Books not found')
+        self.assertEqual(response.data['message'], 'Books not found for the current user')
+
 
 # Test para obtener libro por su PK
 class GetBookByPkAPITestCase(TestCase):
@@ -87,9 +89,9 @@ class GetBookByPkAPITestCase(TestCase):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password123')
         author = Author.objects.create(full_name='Test Author', email='author@example.com')
-        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000)
+        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000, user=self.user)
 
-    # Prueba para obtener libro por su PK auntenticado
+    # Prueba para obtener libro por su PK autenticado
     def test_get_book_by_pk_authenticated(self):
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
@@ -127,7 +129,8 @@ class UpdateBookAPITestCase(TestCase):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password123')
         author = Author.objects.create(full_name='Test Author', email='author@example.com')
-        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000)
+        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000, user=self.user)
+
 
     # Prueba para actualizar libro autenticado
     def test_update_book_authenticated(self):
@@ -137,6 +140,7 @@ class UpdateBookAPITestCase(TestCase):
         url = reverse('update_book', args=[self.book.id])
         data = {
             "title": "Updated Title",
+            "user": self.user.id,
             "author": {
                 "full_name": "Test full name",
                 "email": "test@example.com"
@@ -159,6 +163,7 @@ class UpdateBookAPITestCase(TestCase):
         url = reverse('update_book', args=[self.book.id])
         data = {
             "title": "Test Title",
+            "user": self.user.id,
             "author": {
                 "full_name": "Test full name",
                 "email": "test@example.com"
@@ -182,6 +187,7 @@ class UpdateBookAPITestCase(TestCase):
         url = reverse('update_book', args=[nonexistent_pk])
         data = {
             "title": "Test Title",
+            "user": self.user.id,
             "author": {
                 "full_name": "Test full name",
                 "email": "test@example.com"
@@ -224,7 +230,7 @@ class DeleteBookAPITestCase(TestCase):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password123')
         author = Author.objects.create(full_name='Test Author', email='author@example.com')
-        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000)
+        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000, user=self.user)
 
     # Prueba de eliminar libro autenticado
     def test_delete_book_authenticated(self):
@@ -247,8 +253,9 @@ class DeleteBookAPITestCase(TestCase):
 
         self.assertTrue(Book.objects.filter(id=self.book.id).exists())
 
-    # Prueba de eliminar libro que no existe
+    # Prueba de eliminar libro que no existe.
     def test_delete_book_not_found(self):
+        
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
@@ -256,3 +263,79 @@ class DeleteBookAPITestCase(TestCase):
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+# Test para obtener libro por su PK cuando el usuario no es el propietario
+class GetBookByPkUnauthorizedAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user1 = User.objects.create_user(username='testuser1', email='test1@example.com', password='password123')
+        self.user2 = User.objects.create_user(username='testuser2', email='test2@example.com', password='password123')
+        author = Author.objects.create(full_name='Test Author', email='author@example.com')
+        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000, user=self.user1)
+
+    # Prueba para obtener libro por su PK cuando el usuario no es el propietario
+    def test_get_book_by_pk_unauthorized(self):
+        token = Token.objects.create(user=self.user2)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+        url = reverse('get_book_by_pk', args=[self.book.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'], 'You are not allowed to access this book')
+
+
+# Test para actualizar libros cuando el usuario no es el propietario
+class UpdateBookUnauthorizedAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user1 = User.objects.create_user(username='testuser1', email='test1@example.com', password='password123')
+        self.user2 = User.objects.create_user(username='testuser2', email='test2@example.com', password='password123')
+        author = Author.objects.create(full_name='Test Author', email='author@example.com')
+        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000, user=self.user1)
+    
+    # Prueba para actualizar libro cuando el usuario no es el propietario
+    def test_update_book_unauthorized(self):
+        token = Token.objects.create(user=self.user2)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+        url = reverse('update_book', args=[self.book.id])
+        data = {
+            "title": "Updated Title",
+            "user": self.user2.id,
+            "author": {
+                "full_name": "Test full name",
+                "email": "test@example.com"
+            },
+            "genre": [
+                {"genre": "Test Genre 1"},
+                {"genre": "Test Genre 2"}
+            ],
+            "publication_year": 2020
+        }
+        response = self.client.put(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'], 'You are not allowed to access this book')
+
+
+# Test para eliminar libros cuando el usuario no es el propietario
+class DeleteBookUnauthorizedAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user1 = User.objects.create_user(username='testuser1', email='test1@example.com', password='password123')
+        self.user2 = User.objects.create_user(username='testuser2', email='test2@example.com', password='password123')
+        author = Author.objects.create(full_name='Test Author', email='author@example.com')
+        self.book = Book.objects.create(title='Test Title', author=author, publication_year=2000, user=self.user1)
+
+    # Prueba de eliminar libro cuando el usuario no es el propietario
+    def test_delete_book_unauthorized(self):
+        token = Token.objects.create(user=self.user2)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+        url = reverse('delete_book', args=[self.book.id])
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'], 'You are not allowed to access this book')

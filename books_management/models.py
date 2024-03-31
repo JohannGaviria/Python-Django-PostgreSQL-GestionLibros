@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -21,6 +22,7 @@ class Genre(models.Model):
 # Modelo para los libros
 class Book(models.Model):
     title = models.CharField(max_length=200, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     genre = models.ManyToManyField(Genre)
     publication_year = models.PositiveIntegerField(null=False)
