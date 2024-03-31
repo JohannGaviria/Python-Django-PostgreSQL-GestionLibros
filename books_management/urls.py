@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+
+# Definimos las URLs de la aplicación
 urlpatterns = [
     path('create', views.create_book, name='create_book'),
     path('all', views.get_all_books, name='get_all_books'),

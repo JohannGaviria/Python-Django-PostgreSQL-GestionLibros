@@ -6,6 +6,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from books_management.models import Book, Author, Genre
 
+
+# Test para la busqueda de libros
 class SearchBooksAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -18,6 +20,7 @@ class SearchBooksAPITestCase(TestCase):
         self.book2 = Book.objects.create(title='Book Title 2', author=self.author, publication_year=2005)
         self.book2.genre.add(self.genre2)
 
+    # Prueba para la busqueda de libros autenticado
     def test_search_books_authenticated(self):
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
@@ -29,12 +32,14 @@ class SearchBooksAPITestCase(TestCase):
         self.assertIn('Books', response.data)
         self.assertNotEqual(len(response.data['Books']), 0)
 
+    # Prueba para la busqueda de libros no autenticado
     def test_search_books_unauthenticated(self):
         url = reverse('search_books') + '?query=Test'
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    # Prueba para la busqueda de libros sin parametros
     def test_search_books_no_query_parameter(self):
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
@@ -45,6 +50,7 @@ class SearchBooksAPITestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['message'], 'incorrect search parameters')
 
+    # Prueba para la busqueda de libros sin resultados
     def test_search_books_not_found(self):
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)

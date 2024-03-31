@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from django.shortcuts import get_object_or_404
 from .models import Book
 from .serializers import BookSerializer
 
