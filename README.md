@@ -88,7 +88,7 @@ Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxx
 
 #### Solicitud para obtener un token de autenticación
 
-```json
+```http
 POST /api/user/signIn
 Content-Type: application/json
 
@@ -100,7 +100,7 @@ Content-Type: application/json
 
 #### Respuesta exitosa con el token de autenticación
 
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -128,7 +128,7 @@ POST /api/user/signUp
 
 #### Registro de un nuevo usuario
 
-```json
+```http
 POST /api/user/signUp
 Content-Type: application/json
 
@@ -141,8 +141,7 @@ Content-Type: application/json
 
 #### Respuesta exitosa al registro
 
-```json
-Copy code
+```http
 HTTP/1.1 201 Created
 Content-Type: application/json
 
@@ -169,7 +168,7 @@ POST /api/user/signIn
 
 #### Inicio de sesión de un usuario
 
-```json
+```http
 POST /api/user/signIn
 Content-Type: application/json
 
@@ -181,7 +180,7 @@ Content-Type: application/json
 
 #### Respuesta exitosa al inicio de sesión
 
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -207,15 +206,14 @@ GET /api/user/signOut
 
 #### Cierre de sesión de un usuario
 
-```json
+```http
 GET /api/user/signOut
 Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 #### Respuesta exitosa al cierre de sesión
 
-```json
-Copy code
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -239,7 +237,7 @@ POST /api/books/create
 
 #### Crear un nuevo libro
 
-```json
+```http
 POST /api/books/create
 Content-Type: application/json
 Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -261,7 +259,7 @@ Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 #### Respuesta exitosa al crear un nuevo libro
 
-```json
+```http
 HTTP/1.1 201 Created
 Content-Type: application/json
 
@@ -299,14 +297,14 @@ GET /api/books/all
 
 #### Obtener todos los libros
 
-```json
+```http
 GET /api/books/all
 Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 #### Respuesta exitosa al obtener todos los libros
 
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -355,7 +353,6 @@ Content-Type: application/json
       ],
       "publication_year": 2024
     }
-    // Otros libros
   ]
 }
 ```
@@ -372,14 +369,14 @@ GET /api/books/<id>
 
 #### Obtener un libro por su ID
 
-```json
+```http
 GET /api/books/<id>
 Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 #### Respuesta exitosa al obtener un libro por su ID
 
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -425,7 +422,7 @@ PUT /api/books/update/<id>
 
 #### Actualizar un libro existente
 
-```json
+```http
 PUT /api/books/update/<id>
 Content-Type: application/json
 Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -447,7 +444,7 @@ Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 #### Respuesta exitosa al actualizar un libro existente
 
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -488,13 +485,13 @@ DELETE /api/books/<id>
 | `id`        |	`integer`  |	**Requerido**. ID del libro a eliminar |
 
 #### Eliminar un libro existente
-```json
+```http
 DELETE /api/books/<id>
 Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 #### Respuesta exitosa al eliminar un libro existente
-```json
+```http
 HTTP/1.1 204 No Content
 
 {
@@ -519,14 +516,14 @@ GET /api/books/searchs/?query=
 
 #### Búsqueda de libros
 
-```json
+```http
 GET /api/books/searchs/?query=consulta_de_búsqueda
 Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 #### Respuesta exitosa a la búsqueda de libros
 
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -575,7 +572,6 @@ Content-Type: application/json
       ],
       "publication_year": 2024
     }
-    // Otros libros encotrados
   ]
 }
 ```
